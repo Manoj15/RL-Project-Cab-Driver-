@@ -62,12 +62,34 @@ class CabDriver():
 
         return possible_actions_index,actions   
 
-
+    def update_time_day(self, time, day, ride_time):
+        if (time + ride_time) > 23:
+            updated_time_of_day = (time + ride_time) % 24 
+            updated_day_of_week +=1
+            if updated_day_of_week > 6:
+                updated_day_of_week = day % 7
+            else :
+                updated_day_of_week = day
+        return updated_time_of_day, updated_day_of_week
 
     def reward_func(self, state, action, Time_matrix):
         """Takes in state, action and Time-matrix and returns the reward"""
+        curr_loc = state[0]
+        pickup_loc = action[0]
+        drop_loc = action[1]
+        hour_of_day = state[1]
+        day_of_week = state[2]
+        updated_hour_of_day = hour_of_day
+        updated_day_of_week = day_of_week
 
-        reward = (R* Time_matrix[state[0]][action[1]][state[1]][state[2]]) - ( C * (Time_matrix[state[0]][action[1]][state[1]][state[2]] + Time_matrix[state[0]][action[0]][state[1]][state[2]]))
+        if curr_loc != pickup_loc:
+            time_taken_reach_pickup = Time_matrix[curr_loc][pickup_loc][hour_of_day][day_of_week]
+            updated_hour_of_day, updated_day_of_week = self.update_time_day(hour_of_day, day_of_week, time_taken_reach_pickup)
+
+        if (pickup_loc == 0) and (drop_loc == 0):
+            reward = -C
+        else:
+            reward = (R*Time_matrix[pickup_loc][drop_loc][updated_hour_of_day][updated_day_of_week]) - ( C * (Time_matrix[pickup_pos][drop_pos][updated_hour_of_day][updated_day_of_week] + Time_matrix[cab_pos][pickup_pos][time_of_day][day_of_week))
 
         return reward
 
@@ -76,9 +98,34 @@ class CabDriver():
 
     def next_state_func(self, state, action, Time_matrix):
         """Takes state and action as input and returns next state"""
+        # Initialize variables
+        total_time = 0
+        curr_loc = state[0]
+        pickup_loc = action[0]
+        drop_loc = action[1]
+        hour_of_day = state[1]
+        day_of_week = state[2]
+        updated_hour_of_day = hour_of_day
+        updated_day_of_week = day_of_week
+
+        if curr_loc != pickup_loc:
+            time_taken_reach_pickup = Time_matrix[curr_loc][pickup_loc][hour_of_day][day_of_week]
+            updated_hour_of_day, updated_day_of_week = self.update_time_day(hour_of_day, day_of_week, time_taken_reach_pickup)
+            total_time += time_taken_reach_pickup
+        
+        if (pickup_loc = 0) and (drop_loc == 0):
+            updated_hour_of_day,updated_day_of_week = self.new_time(hour_of_day,day_of_week,1)
+            next_state = [curr_loc,updated_hour_of_day,updated_day_of_week]
+            total_time += 1 # Added 1 unit has wait time
+        else:
+            time_taken_pickup_drop = Time_matrix[pickup_loc][drop_loc][updated_hour_of_day][updated_day_of_week]
+            updated_hour_of_day, updated_day_of_week = self.update_time_day(updated_hour_of_day,updated_day_of_week,time_taken_pickup_drop)
+            next_state = [drop_loc, updated_hour_of_day, updated_day_of_week]
+            total_time += time_taken_pickup_drop
+
 
         
-        return next_state
+        return next_state, total_time
 
 
 
