@@ -40,6 +40,7 @@ class CabDriver():
         """Determining the number of requests basis the location. 
         Use the table specified in the MDP and complete for rest of the locations"""
         location = state[0]
+        print(location)
         if location == 0:
             requests = np.random.poisson(2)
         elif location == 2:
@@ -63,6 +64,9 @@ class CabDriver():
         return possible_actions_index,actions   
 
     def update_time_day(self, time, day, ride_time):
+        updated_day_of_week = day
+        updated_time_of_day = (time + ride_time)
+        print(updated_time_of_day)
         if (time + ride_time) > 23:
             updated_time_of_day = (time + ride_time) % 24 
             updated_day_of_week +=1
@@ -89,7 +93,7 @@ class CabDriver():
         if (pickup_loc == 0) and (drop_loc == 0):
             reward = -C
         else:
-            reward = (R*Time_matrix[pickup_loc][drop_loc][updated_hour_of_day][updated_day_of_week]) - ( C * (Time_matrix[pickup_pos][drop_pos][updated_hour_of_day][updated_day_of_week] + Time_matrix[cab_pos][pickup_pos][time_of_day][day_of_week))
+            reward = (R * Time_matrix[pickup_loc][drop_loc][updated_hour_of_day][updated_day_of_week]) - ( C * (Time_matrix[pickup_loc][drop_loc][updated_hour_of_day][updated_day_of_week] + Time_matrix[curr_loc][pickup_loc][time_of_day][day_of_week]))
 
         return reward
 
@@ -113,7 +117,7 @@ class CabDriver():
             updated_hour_of_day, updated_day_of_week = self.update_time_day(hour_of_day, day_of_week, time_taken_reach_pickup)
             total_time += time_taken_reach_pickup
         
-        if (pickup_loc = 0) and (drop_loc == 0):
+        if (pickup_loc == 0) and (drop_loc == 0):
             updated_hour_of_day,updated_day_of_week = self.new_time(hour_of_day,day_of_week,1)
             next_state = [curr_loc,updated_hour_of_day,updated_day_of_week]
             total_time += 1 # Added 1 unit has wait time
