@@ -17,3 +17,5 @@ Taking long-term profit as the goal, you propose a method based on reinforcement
 In this project, you need to create the environment and an RL agent that learns to choose the best request. You need to train your agent using vanilla Deep Q-learning (DQN) only and NOT a double DQN. You have learnt about the two architectures of DQN (shown below) - you are free to choose any of these.
  
 ![alt text](https://i.ytimg.com/vi/MItCZ6GK2JM/maxresdefault.jpg)
+
+There’s a renowned paper called ‘Deep Reinforcement Learning for List-wise Recommendations’ by Xiangyu Zhao, Liang Zhang, Zhuoye Ding. They have mentioned a few recommendations on how to select the Q-network architecture. You can download the paper from below (refer to the highlighted section 1.2 - Architecture Selection). But referring to the paper is an optional part of this project.
